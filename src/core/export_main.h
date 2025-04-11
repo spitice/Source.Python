@@ -62,7 +62,7 @@ typedef void (*ModuleInitFn)( scope );
 //---------------------------------------------------------------------------------
 struct SourcePythonModule_t
 {
-	char*		 szName;
+	const char*  szName;
 	ModuleInitFn initFunc;
 };
 
@@ -80,17 +80,7 @@ class CSPModule
 		static int nextFreeModule;
 
 	public:
-		CSPModule(char* szName, ModuleInitFn initFunc) {
-			if( nextFreeModule < MAX_SOURCEPYTHON_MODULES ) {
-				g_SourcePythonModules[nextFreeModule].initFunc = (ModuleInitFn)initFunc;
-				g_SourcePythonModules[nextFreeModule].szName = szName;
-
-				nextFreeModule++;
-
-				g_SourcePythonModules[nextFreeModule].initFunc = NULL;
-				g_SourcePythonModules[nextFreeModule].szName = NULL;
-			}
-		}
+		CSPModule(const char* szName, ModuleInitFn initFunc);
 };
 
 //---------------------------------------------------------------------------------

@@ -168,7 +168,7 @@ public:
 	void				Protect(int size);
 	void				UnProtect(int size);
 
-	static void         CallCallback(PyObject* self, char* szCallback);
+	static void         CallCallback(PyObject* self, const char* szCallback);
 	static void         PreDealloc(PyObject* self);
 	static CPointer*    PreRealloc(PyObject* self, int iSize);
 	static void         __del__(PyObject* self);

@@ -170,18 +170,18 @@ CPointer* CBinaryFile::FindSignature(object oSignature)
 	unsigned char* sigstr = (unsigned char *) PyBytes_AsString(oSignature.ptr());
 	if (!sigstr)
 		BOOST_RAISE_EXCEPTION(PyExc_ValueError, "Failed to read the given signature.");
-	
+
 	CPointer* result = NULL;
 	if (SearchSigInCache(sigstr, result))
 		return result;
-	
+
 	int iLength = len(oSignature);
 	if (SearchSigInBinary(oSignature, iLength, sigstr, result))
 		return result;
 
 	object oHexSig = oSignature.attr("hex")();
 	const char* szHexSig = extract<const char*>(oHexSig);
-	
+
 	PythonLog(4, "Searching for a hooked signature (relative jump)...");
 	if (iLength <= 6)
 		BOOST_RAISE_EXCEPTION(PyExc_ValueError, "Signature is too short to search for a hooked signature (relative jump): %s", szHexSig);
@@ -190,7 +190,7 @@ CPointer* CBinaryFile::FindSignature(object oSignature)
 	oSignature = unhexlify("E92A2A2A2A") + oSignature.slice(5, _);
 	if (SearchSigHooked(oSignature, iLength, sigstr, result))
 		return result;
-	
+
 	PythonLog(4, "Searching for a hooked signature (absolute jump)...");
 	if (iLength <= 7)
 		BOOST_RAISE_EXCEPTION(PyExc_ValueError, "Signature is too short to search for a hooked signature (absolute jump): %s", szHexSig);
@@ -198,7 +198,7 @@ CPointer* CBinaryFile::FindSignature(object oSignature)
 	oSignature = import("binascii").attr("unhexlify")("FF252A2A2A2A") + oSignature.slice(6, _);
 	if (SearchSigHooked(oSignature, iLength, sigstr, result))
 		return result;
-	
+
 	BOOST_RAISE_EXCEPTION(PyExc_ValueError, "Could not find signature: %s", szHexSig);
 	return new CPointer(); // To fix a warning. This will never get called.
 }
@@ -339,7 +339,7 @@ CPointer* CBinaryFile::FindAddress(object oIdentifier)
 {
 	if(CheckClassname(oIdentifier, "bytes"))
 		return FindSignature(oIdentifier);
-	
+
 	return FindSymbol(extract<char*>(oIdentifier));
 }
 
@@ -375,7 +375,7 @@ dict CBinaryFile::GetSymbols()
 	}
 #elif __linux__
 	// TODO: Remove duplicated code. See also: FindSymbol()
-	
+
 	struct link_map *dlmap;
 	struct stat dlstat;
 	int dlfile;
@@ -481,6 +481,12 @@ bool str_ends_with(const char *szString, const char *szSuffix)
 CBinaryFile* CBinaryManager::FindBinary(char* szPath, bool bSrvCheck /* = true */, bool bCheckExtension /* = true */)
 {
 	std::string szBinaryPath = szPath;
+	// [css2025_win32] Converts server.dll to cstrike/bin/server.dll. Only supports x86.
+	if (szBinaryPath == "server") {
+		static char szGameDir[MAX_PATH_LENGTH];
+		engine->GetGameDir(szGameDir, MAX_PATH_LENGTH);
+        szBinaryPath = std::string(szGameDir) + "\\bin\\server.dll";
+	}
 #ifdef __linux__
 	if (bCheckExtension) {
 		if (bSrvCheck && !str_ends_with(szBinaryPath.data(), "_srv") && !str_ends_with(szBinaryPath.data(), ".so"))
@@ -584,7 +590,7 @@ CBinaryFile* CBinaryManager::FindBinary(char* szPath, bool bSrvCheck /* = true *
 		if (hdr.p_type == PT_LOAD && hdr.p_flags == (PF_X|PF_R))
 		{
 			/* From glibc, elf/dl-load.c:
-			 * c->mapend = ((ph->p_vaddr + ph->p_filesz + GLRO(dl_pagesize) - 1) 
+			 * c->mapend = ((ph->p_vaddr + ph->p_filesz + GLRO(dl_pagesize) - 1)
 			 *             & ~(GLRO(dl_pagesize) - 1));
 			 *
 			 * In glibc, the segment file size is aligned up to the nearest page size and

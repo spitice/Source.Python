@@ -290,7 +290,7 @@ CFunction* CPointer::MakeVirtualFunction(CFunctionInfo& info)
 	);
 }
 
-void CPointer::CallCallback(PyObject* self, char* szCallback)
+void CPointer::CallCallback(PyObject* self, const char* szCallback)
 {
 	if (PyObject_HasAttrString(self, szCallback))
 	{

@@ -46,7 +46,7 @@ int ExceptionHandler(_EXCEPTION_POINTERS* info, DWORD code)
 {
 	if (code == EXCEPTION_ACCESS_VIOLATION) {
 		EXCEPTION_RECORD* record = info->ExceptionRecord;
-		char* exc_message;
+		const char* exc_message;
 
 		if (record->ExceptionInformation[0] == 0)
 			exc_message = "Access violation while reading address '%u'.";

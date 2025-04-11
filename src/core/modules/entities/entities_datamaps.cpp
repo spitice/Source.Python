@@ -165,6 +165,7 @@ BoostInputFn TypeDescriptionSharedExt::get_input_function(const typedescription_
 	if (!(pTypeDesc.flags & FTYPEDESC_INPUT))
 		BOOST_RAISE_EXCEPTION(PyExc_TypeError, "\"%s\" is not an input.", pTypeDesc.fieldName);
 
+	using namespace boost::placeholders;
 	return boost::bind(pTypeDesc.inputFunc, _1, _2);
 }
 

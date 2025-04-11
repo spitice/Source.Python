@@ -247,7 +247,7 @@ ReturnType CallHelper(Function func, DCCallVM* vm, unsigned long addr)
 {
 	ReturnType result;
 	TRY_SEGV()
-		result = (ReturnType) func(vm, addr);
+		result = (ReturnType) func(vm, reinterpret_cast<DCpointer>(addr));
 	EXCEPT_SEGV()
 	return result;
 }
@@ -255,7 +255,7 @@ ReturnType CallHelper(Function func, DCCallVM* vm, unsigned long addr)
 void CallHelperVoid(DCCallVM* vm, unsigned long addr)
 {
 	TRY_SEGV()
-		dcCallVoid(vm, addr);
+		dcCallVoid(vm, reinterpret_cast<DCpointer>(addr));
 	EXCEPT_SEGV()
 }
 
@@ -297,10 +297,10 @@ object CFunction::Call(PyObject *args, PyObject *kw)
 				if (arg != Py_None)
 					ulAddr = ExtractAddress(object(handle<>(borrowed(arg))));
 
-				dcArgPointer(g_pCallVM, ulAddr);
+				dcArgPointer(g_pCallVM, reinterpret_cast<DCpointer>(ulAddr));
 				break;
 			}
-			case DATA_TYPE_STRING:		dcArgPointer(g_pCallVM, (unsigned long) (void *) extract<char *>(arg)); break;
+			case DATA_TYPE_STRING:		dcArgPointer(g_pCallVM, (void *) extract<char *>(arg)); break;
 			default:					BOOST_RAISE_EXCEPTION(PyExc_ValueError, "Unknown argument type.")
 		}
 	}

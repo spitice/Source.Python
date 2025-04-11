@@ -39,6 +39,7 @@
 #include "modules/entities/entities_entity.h"
 #include "icommandline.h"
 
+#include <string>
 
 //---------------------------------------------------------------------------------
 // Interfaces we're going to use.
@@ -113,17 +114,22 @@ bool CPythonManager::Initialize( void )
 	wchar_t wszProgramName[MAX_PATH_LENGTH];
 	V_strtowcs(szProgramName, -1, wszProgramName, MAX_PATH_LENGTH);
 
+	// [css2025_win32] Generate python path for Lib and DLLs directory
+	auto pythonRoot = std::wstring(wszPythonHome);
+    auto pythonPath = pythonRoot + L"\\Lib;" + pythonRoot + L"\\DLLs";
+
 	// Set that as the python home directory.
  	Py_SetPythonHome(wszPythonHome);
  	Py_SetProgramName(wszProgramName);
-	Py_SetPath(wszPythonHome);
+	//Py_SetPath(wszPythonHome);
+	Py_SetPath(pythonPath.c_str());
 
 	// Initialize python and its namespaces.
 	Py_Initialize();
 
 	// Print some information
 	DevMsg(1, MSG_PREFIX "Python version %s initialized!\n", Py_GetVersion());
-	
+
 	// Set sys.argv and update sys.path
 	DevMsg(1, MSG_PREFIX "Setting sys.argv...\n");
 	ICommandLine* pCommandLine = CommandLine();
@@ -152,14 +158,14 @@ bool CPythonManager::Initialize( void )
 
 	// Add operating system specific paths.
 #if defined(WIN32)
-	AddToSysPath("/Python3/plat-win");
+	// [css2025_win32] Changed path. plat-win/linux is N/A anymore.
+	//AddToSysPath("/Python3/plat-win");
 #else
 	AddToSysPath("/Python3/plat-linux");
 
 	// We've got a bunch of linux shared objects here we need to load.
 	AddToSysPath("/Python3/lib-dynload");
 #endif
-
 	// Site packages for any extra packages...
 	AddToSysPath("/packages/site-packages");
 
@@ -200,7 +206,7 @@ bool CPythonManager::Initialize( void )
 		// Only reconnect the streams if the server was launched with a console (issue #392).
 		if (pCommandLine->FindParm("-console")) {
 			object io_open = python::import("io").attr("open");
-		
+
 			object stdin_ = sys.attr("stdin");
 			if (stdin_.is_none())
 			{
@@ -428,9 +434,9 @@ void InitConverters()
 	baseentity_to_python();
 	baseentity_from_python();
 	baseentity_index_from_python();
-	
+
 	void_ptr_to_python();
 	void_ptr_from_python();
-	
+
 	unsigned_char_ptr_to_python();
 }

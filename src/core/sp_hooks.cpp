@@ -32,6 +32,8 @@
 using namespace boost::python;
 
 // SDK
+// [css2025_win32] FORWARD DECL
+class CBasePlayer;
 #include "edict.h"
 #include "game/shared/shareddefs.h"
 #include "game/shared/usercmd.h"
@@ -184,7 +186,7 @@ bool PrePlayerRunCommand(HookType_t hook_type, CHook* pHook)
 	unsigned int index;
 	if (!IndexFromBaseEntity(pEntity, index))
 		return false;
-	
+
 	// https://github.com/Source-Python-Dev-Team/Source.Python/issues/149
 #if defined(ENGINE_BRANCH_TF2)
 	CUserCmd cmd = *pHook->GetArgument<CUserCmd*>(1);

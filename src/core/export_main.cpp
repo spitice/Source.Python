@@ -48,6 +48,18 @@ SourcePythonModule_t g_SourcePythonModules[MAX_SOURCEPYTHON_MODULES];
 //---------------------------------------------------------------------------------
 int CSPModule::nextFreeModule = 0;
 
+CSPModule::CSPModule(const char* szName, ModuleInitFn initFunc)
+{
+    if (nextFreeModule < MAX_SOURCEPYTHON_MODULES) {
+        g_SourcePythonModules[nextFreeModule].initFunc = (ModuleInitFn)initFunc;
+        g_SourcePythonModules[nextFreeModule].szName = szName;
+
+        nextFreeModule++;
+
+        g_SourcePythonModules[nextFreeModule].initFunc = NULL;
+        g_SourcePythonModules[nextFreeModule].szName = NULL;
+    }
+}
 
 //---------------------------------------------------------------------------------
 // Initializes all python modules
@@ -68,7 +80,7 @@ bool modulsp_init( void )
 			}
 
 			// Get the module name.
-			char* szModuleName = g_SourcePythonModules[i].szName;
+			const char* szModuleName = g_SourcePythonModules[i].szName;
 
 			// Debug info.
 			DevMsg(1, MSG_PREFIX "Initializing %s module\n", szModuleName);

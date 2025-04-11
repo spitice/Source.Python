@@ -31,6 +31,8 @@
 #include "export_main.h"
 #include "modules/memory/memory_tools.h"
 
+// [css2025_win32] FORWARD DECL
+class CBasePlayer;
 #include "game/shared/shareddefs.h"
 #include "game/shared/usercmd.h"
 #include "public/game/server/iplayerinfo.h"
@@ -97,7 +99,7 @@ void export_playerinfo(scope _players)
 			&IPlayerInfo::GetFragCount,
 			"Returns the player's frag count."
 		)
-		
+
 		.add_property("deaths",
 			&IPlayerInfo::GetDeathCount,
 			"Returns the player's death count."
@@ -182,7 +184,7 @@ void export_playerinfo(scope _players)
 			&IPlayerInfo::GetMaxHealth,
 			"Returns the player's maximum health."
 		)
-		
+
 		.add_property("last_user_command",
 			&IPlayerInfo::GetLastUserCommand
 		)
@@ -394,7 +396,7 @@ void export_user_cmd(scope _players)
 		&CUserCmd::hasbeenpredicted,
 		"Client only, tracks whether we've predicted this command at least once."
 	);
-	
+
 	UserCmd.NOT_IMPLEMENTED_ATTR("head_angles");
 	UserCmd.NOT_IMPLEMENTED_ATTR("head_offset");
 

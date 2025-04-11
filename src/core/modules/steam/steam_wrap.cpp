@@ -69,7 +69,7 @@ void export_steamid(scope _steam)
 	class_<CSteamID, CSteamID*> SteamID("SteamID");
 
 	SteamID.def_pickle(steamid_pickle_suite());
-	
+
 	// Constructors
 
 	//-----------------------------------------------------------------------------
@@ -83,7 +83,7 @@ void export_steamid(scope _steam)
 	//-----------------------------------------------------------------------------
 	// Purpose: Constructor
 	// Input  : unAccountID -	32-bit account ID
-	//			unAccountInstance - instance 
+	//			unAccountInstance - instance
 	//			eUniverse -		Universe this account belongs to
 	//			eAccountType -	Type of account
 	//-----------------------------------------------------------------------------
@@ -112,14 +112,14 @@ void export_steamid(scope _steam)
 	);
 
 	SteamID.def(
-		"instanced_set", 
+		"instanced_set",
 		&CSteamID::InstancedSet,
 		"Set parameters for SteamID.",
 		("account_id", "instance", "universe", "account_type")
 	);
 
 	SteamID.def(
-		"full_set", 
+		"full_set",
 		&CSteamID::FullSet,
 		"Initialize a Steam ID from its 52-bit parts and universe/type.",
 		("identifier", "universe", "account_type")
@@ -133,7 +133,7 @@ void export_steamid(scope _steam)
 	);
 
 	SteamID.def(
-		"to_uint64", 
+		"to_uint64",
 		&CSteamID::ConvertToUint64,
 		"Convert a Steam ID to its 64-bit representation."
 	);
@@ -149,7 +149,7 @@ void export_steamid(scope _steam)
 	);
 
 	SteamID.add_property(
-		"static_account_key", 
+		"static_account_key",
 		&CSteamID::GetStaticAccountKey,
 		"Convert the static parts of a Steam ID to a 64-bit representation. For " \
 		"multiseat accounts, all instances of that account will have the same " \
@@ -176,7 +176,7 @@ void export_steamid(scope _steam)
 	);
 
 	SteamID.def(
-		"is_content_server_account", 
+		"is_content_server_account",
 		&CSteamID::BContentServerAccount,
 		"Return True if this is a content server account ID."
 	);
@@ -194,7 +194,7 @@ void export_steamid(scope _steam)
 	);
 
 	SteamID.def(
-		"is_individual_account", 
+		"is_individual_account",
 		&CSteamID::BIndividualAccount,
 		"Return True if this is an individual user account ID."
 	);
@@ -209,15 +209,15 @@ void export_steamid(scope _steam)
 
 	// Properties
 	SteamID.add_property(
-		"account_id", 
+		"account_id",
 		&CSteamID::GetAccountID,
 		&CSteamID::SetAccountID,
 		"A property to get/set the account ID."
 	);
 
 	SteamID.add_property(
-		"universe", 
-		&CSteamID::GetEUniverse, 
+		"universe",
+		&CSteamID::GetEUniverse,
 		&CSteamID::SetEUniverse,
 		"A property to get/set the universe."
 	);
@@ -250,7 +250,7 @@ void export_steamid(scope _steam)
 void export_universe(scope _steam)
 {
 	enum_<EUniverse> Universe("Universe");
-	
+
 	Universe.value("INVALID", k_EUniverseInvalid);
 	Universe.value("PUBLIC", k_EUniversePublic);
 	Universe.value("BETA", k_EUniverseBeta);
@@ -284,6 +284,7 @@ void export_account_type(scope _steam)
 
 	// Available in BM:S
 	NOT_IMPLEMENTED_VALUE(EAccountType, "CONSOLE_USER");
-	
-	export_engine_specific_account_type(_steam, AccountType);
+
+	// [css2025_win32] No longer available?
+	//export_engine_specific_account_type(_steam, AccountType);
 }

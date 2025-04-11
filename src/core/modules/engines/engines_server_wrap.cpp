@@ -355,7 +355,7 @@ static void export_engine_server(scope _server)
 			"Given a node number and the specified PVS, return with the node is in the PVS.",
 			args("nodenum", "pvs", "vissize")
 		)
-		
+
 #if !defined(ENGINE_BLADE)
 		.def("check_areas_connected",
 			&IVEngineServer::CheckAreasConnected,
@@ -369,7 +369,7 @@ static void export_engine_server(scope _server)
 			"Given an origin, determine which area index the origin is within.",
 			args("origin")
 		)
-		
+
 #if !defined(ENGINE_BLADE)
 		.def("get_area_bits",
 			&IVEngineServer::GetAreaBits,
@@ -593,7 +593,7 @@ static void export_engine_server(scope _server)
 			"Sets the gamestats data container.",
 			args("gamestats_data")
 		)
-		
+
 		.def("get_gamestats_data",
 			&IVEngineServer::GetGamestatsData,
 			"Returns the gamestats data container.",
@@ -785,7 +785,7 @@ static void export_query_cvar_status(scope _server)
 static void export_server_game_dll(scope _server)
 {
 	class_<IServerGameDLL, boost::noncopyable> ServerGameDLL("_ServerGameDLL", no_init);
-	
+
 	// Methods...
 	ServerGameDLL.add_property(
 		"all_server_classes",
@@ -821,7 +821,7 @@ static void export_server_game_dll(scope _server)
 
 	// Add memory tools...
 	ServerGameDLL ADD_MEM_TOOLS(IServerGameDLL);
-	
+
 	// Singleton...
 	_server.attr("server_game_dll") = object(ptr(servergamedll));
 }
@@ -881,11 +881,12 @@ static void export_iserver(scope _server)
 
 	_IServer.add_property(
 		"udp_port",
-#if defined(ENGINE_BRANCH_TF2) || defined(ENGINE_BRANCH_HL2DM)
+		// [css2025_win32] GetUPDPort is no longer available.
+//#if defined(ENGINE_BRANCH_TF2) || defined(ENGINE_BRANCH_HL2DM)
 		&IServer::GetLocalUDPPort,
-#else
-		&IServer::GetUDPPort,
-#endif
+//#else
+//		&IServer::GetUDPPort,
+//#endif
 		"Return the currently used UDP port.\n\n"
 		":rtype: int"
 	);

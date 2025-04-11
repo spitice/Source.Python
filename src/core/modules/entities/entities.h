@@ -99,12 +99,13 @@ public:
 	{
 		return ExcIndexFromBaseHandle(m_hInflictor);
 	}
-	
+
 	void set_inflictor(unsigned int uiInflictor)
 	{
-		m_hInflictor = ExcBaseHandleFromIndex(uiInflictor);
+		//m_hInflictor = ExcBaseHandleFromIndex(uiInflictor);
+        m_hInflictor = EHANDLE::UnsafeFromBaseHandle(ExcBaseHandleFromIndex(uiInflictor));
 	}
-	
+
 	unsigned int get_attacker()
 	{
 #if defined(ENGINE_CSGO)
@@ -113,7 +114,7 @@ public:
 		return ExcIndexFromBaseHandle(m_hAttacker);
 #endif
 	}
-	
+
 	void set_attacker(unsigned int uiAttacker)
 	{
 #if defined(ENGINE_CSGO)
@@ -144,10 +145,11 @@ public:
 			m_CSGOAttacker.m_iUserId = -1;
 		}
 #else
-		m_hAttacker = ExcBaseHandleFromIndex(uiAttacker);
+        //m_hAttacker = ExcBaseHandleFromIndex(uiAttacker);
+        m_hAttacker = EHANDLE::UnsafeFromBaseHandle(ExcBaseHandleFromIndex(uiAttacker));
 #endif
 	}
-	
+
 	unsigned int get_weapon()
 	{
 		unsigned int index;
@@ -169,23 +171,24 @@ public:
 		}
 		return get_inflictor();
 	}
-	
+
 	void set_weapon(unsigned int uiWeapon)
 	{
-		m_hWeapon = ExcBaseHandleFromIndex(uiWeapon);
+		//m_hWeapon = ExcBaseHandleFromIndex(uiWeapon);
+		m_hWeapon = EHANDLE::UnsafeFromBaseHandle(ExcBaseHandleFromIndex(uiWeapon));
 	}
-	
+
 	void set_base_damage(float flBaseDamage)
 	{
 		m_flBaseDamage = flBaseDamage;
 	}
-	
+
 	int get_damaged_other_players()
 	{
 		return -1;
 		// return m_iDamagedOtherPlayers;
 	}
-	
+
 	void set_damaged_other_players(int iDamagedOtherPlayers)
 	{
 		// m_iDamagedOtherPlayers = iDamagedOtherPlayers;
@@ -206,47 +209,47 @@ public:
 		set_attacker(pTakeDamageInfo, 0);
 		return pTakeDamageInfo;
 	}
-	
+
 	static unsigned int get_inflictor(CTakeDamageInfo *pTakeDamageInfo)
 	{
 		return ((TakeDamageInfoBaseWrapper *)pTakeDamageInfo)->get_inflictor();
 	}
-	
+
 	static void set_inflictor(CTakeDamageInfo *pTakeDamageInfo, unsigned int iInflictor)
 	{
 		((TakeDamageInfoBaseWrapper *)pTakeDamageInfo)->set_inflictor(iInflictor);
 	}
-	
+
 	static unsigned int get_attacker(CTakeDamageInfo *pTakeDamageInfo)
 	{
 		return ((TakeDamageInfoBaseWrapper *)pTakeDamageInfo)->get_attacker();
 	}
-	
+
 	static void set_attacker(CTakeDamageInfo *pTakeDamageInfo, unsigned int iAttacker)
 	{
 		((TakeDamageInfoBaseWrapper *)pTakeDamageInfo)->set_attacker(iAttacker);
 	}
-	
+
 	static unsigned int get_weapon(CTakeDamageInfo *pTakeDamageInfo)
 	{
 		return ((TakeDamageInfoBaseWrapper *)pTakeDamageInfo)->get_weapon();
 	}
-	
+
 	static void set_weapon(CTakeDamageInfo *pTakeDamageInfo, unsigned int iWeapon)
 	{
 		((TakeDamageInfoBaseWrapper *)pTakeDamageInfo)->set_weapon(iWeapon);
 	}
-	
+
 	static void set_base_damage(CTakeDamageInfo *pTakeDamageInfo, float flBaseDamage)
 	{
 		((TakeDamageInfoBaseWrapper *)pTakeDamageInfo)->set_base_damage(flBaseDamage);
 	}
-	
+
 	static int get_damaged_other_players(CTakeDamageInfo *pTakeDamageInfo)
 	{
 		return ((TakeDamageInfoBaseWrapper *)pTakeDamageInfo)->get_damaged_other_players();
 	}
-	
+
 	static void set_damaged_other_players(CTakeDamageInfo *pTakeDamageInfo, int iDamagedOtherPlayers)
 	{
 		((TakeDamageInfoBaseWrapper *)pTakeDamageInfo)->set_damaged_other_players(iDamagedOtherPlayers);
@@ -264,7 +267,7 @@ public:
     {
         return STRING(pEventAction->m_iTarget);
     }
-    
+
     static void set_target(CEventAction *pEventAction, const char *szTarget)
     {
         pEventAction->m_iTarget = MAKE_STRING(szTarget);
@@ -284,7 +287,7 @@ public:
     {
         return STRING(pEventAction->m_iParameter);
     }
-    
+
     static void set_parameter(CEventAction *pEventAction, const char *szParameter)
     {
         pEventAction->m_iParameter = MAKE_STRING(szParameter);

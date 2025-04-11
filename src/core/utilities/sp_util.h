@@ -91,9 +91,9 @@ inline void PrintCurrentException(bool bLogged = true)
 //-----------------------------------------------------------------------------
 // Returns True if the class name of the given object equals the given string.
 //-----------------------------------------------------------------------------
-inline bool CheckClassname(object obj, char* name)
+inline bool CheckClassname(object obj, const char* name)
 {
-	return strcmp(extract<char *>(obj.attr("__class__").attr("__name__")), name) == 0;
+	return strcmp(extract<const char *>(obj.attr("__class__").attr("__name__")), name) == 0;
 }
 
 //-----------------------------------------------------------------------------
