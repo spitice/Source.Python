@@ -1,0 +1,3 @@
+[submodule "src/thirdparty/DynamicHooks"]
+	path = src/thirdparty/DynamicHooks
+	url = https://github.com/Ayuto/DynamicHooks
