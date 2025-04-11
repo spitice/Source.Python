@@ -825,4 +825,4 @@ SOURCE_PYTHON_COMMON(core)
 SOURCE_PYTHON_COMMON(source-python)
 
 # Loads experimental projects
-#add_subdirectory(experiments)
+add_subdirectory(experiments)
