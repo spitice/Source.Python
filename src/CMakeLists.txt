@@ -1,11 +1,13 @@
 # ------------------------------------------------------------------
 # Set minimum required version of CMake
 # ------------------------------------------------------------------
-CMake_Minimum_Required(VERSION 2.8)
+CMake_Minimum_Required(VERSION 3.23)
 
 # ------------------------------------------------------------------
 # Makefile includes.
 # ------------------------------------------------------------------
+# [css2025_win32] Explicitly sets the branch.
+set(BRANCH css)
 include("makefiles/branch/${BRANCH}.cmake")
 include("makefiles/shared.cmake")
 
@@ -672,17 +674,155 @@ EndIf()
 # ------------------------------------------------------------------
 # Definitions
 # ------------------------------------------------------------------
-Add_Definitions(
-    -DGAME_DLL=1
-    -DSOURCE_ENGINE=${SOURCE_ENGINE}
-    -DSOURCE_ENGINE_BRANCH=${BRANCH}
-    -DBOOST_PYTHON_MAX_ARITY=32
-)
+
+# ------------------------------------------------------------------
+# [css2025_win32] Thirdparties
+# ------------------------------------------------------------------
+
+# dyncall
+add_subdirectory(thirdparty/dyncall)
+set(Dyncall_ROOT ${CMAKE_SOURCE_DIR}/thirdparty/dyncall)
+
+target_include_directories(dyncall_s PUBLIC ${Dyncall_ROOT}/dyncall)
+target_include_directories(dyncallback_s PUBLIC ${Dyncall_ROOT}/dyncallback)
+target_include_directories(dynload_s PUBLIC ${Dyncall_ROOT}/dynload)
+
+target_compile_options(dyncall_s PRIVATE "/MT" "/safeseh")
+target_compile_options(dyncallback_s PRIVATE "/MT" "/safeseh")
+target_compile_options(dynload_s PRIVATE "/MT" "/safeseh")
+
+
+# DynamicHooks
+add_subdirectory(thirdparty/DynamicHooks/src)
+set(DynamicHooks_ROOT ${CMAKE_SOURCE_DIR}/thirdparty/DynamicHooks)
+
+target_compile_definitions(DynamicHooks PUBLIC ASMJIT_STATIC=1)
+target_include_directories(DynamicHooks PUBLIC ${DynamicHooks_ROOT}/src)
+# Fix library path
+set_property(TARGET DynamicHooks PROPERTY LINK_LIBRARIES )
+target_link_libraries(DynamicHooks AsmJit)
+
+target_compile_options(DynamicHooks PRIVATE "/MT")
+
+# AsmJit
+add_library(AsmJit INTERFACE)
+set(AsmJit_ROOT ${DynamicHooks_ROOT}/src/thirdparty/AsmJit)
+
+target_compile_definitions(AsmJit INTERFACE ASMJIT_STATIC=1)
+target_include_directories(AsmJit INTERFACE ${AsmJit_ROOT}/include)
+target_link_libraries(AsmJit INTERFACE ${AsmJit_ROOT}/lib/AsmJit)
 
 # ------------------------------------------------------------------
 # Setup link libraries for this project.
 # ------------------------------------------------------------------
-Target_Link_Libraries(core ${SOURCEPYTHON_LINK_LIBRARIES})
-Target_Link_Libraries(core ${SOURCEPYTHON_LINK_LIBRARIES_RELEASE})
+# [css2025_win32] Remove the old linkage list
+#Target_Link_Libraries(core ${SOURCEPYTHON_LINK_LIBRARIES})
+#Target_Link_Libraries(core ${SOURCEPYTHON_LINK_LIBRARIES_RELEASE})
 
-Target_Link_Libraries(source-python ${SOURCEPYTHON_LINK_LIBRARIES})
+#Target_Link_Libraries(source-python ${SOURCEPYTHON_LINK_LIBRARIES})
+
+# [css2025_win32] Find packages installed via vcpkg
+find_package(boost_filesystem REQUIRED CONFIG)
+find_package(boost_python REQUIRED CONFIG)
+find_package(boost_system REQUIRED CONFIG)
+find_package(Python3 COMPONENTS Development REQUIRED)
+
+# [css2025_win32] Set the runtime library
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
+# [css2025_win32] Common settings for shared libraries
+function(source_python_common TARGET_NAME)
+    set_target_properties(${TARGET_NAME} PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED true
+    )
+
+    target_compile_options(${TARGET_NAME} PRIVATE
+        "/MT"
+        # C4819: The file contains a character that cannot be represented in the current code page
+        "/wd4819"
+    )
+
+    target_compile_definitions(${TARGET_NAME} PRIVATE
+        COMPILER_MSVC
+        COMPILER_MSVC32
+        WIN32
+        _WIN32
+        WINDOWS
+        _WINDOWS
+        PLATFORM_32BITS
+
+        GAME_DLL=1
+        SOURCE_ENGINE=${SOURCE_ENGINE}
+        SOURCE_ENGINE_BRANCH=${BRANCH}
+        BOOST_PYTHON_MAX_ARITY=32
+        #BOOST_PYTHON_STATIC_LIB
+        #BOOST_PYTHON_SOURCE
+        #BOOST_PYTHON_NO_LIB
+
+        HAVE_SNPRINTF=1
+    )
+
+    target_link_libraries(${TARGET_NAME}
+        Boost::filesystem
+        Boost::python
+        Boost::system
+        Python3::Python
+        AsmJit
+        DynamicHooks
+        dyncall_s
+        dyncallback_s
+        dynload_s
+
+        ${SOURCESDK_LIB}/public/x86/tier0.lib
+        ${SOURCESDK_LIB}/public/x86/tier1.lib
+        ${SOURCESDK_LIB}/public/x86/vstdlib.lib
+        ${SOURCESDK_LIB}/public/x86/mathlib.lib
+    )
+
+    target_include_directories(${TARGET_NAME} PRIVATE
+        ${SOURCESDK}
+        ${SOURCESDK}/common
+        ${SOURCESDK}/common/protobuf-2.5.0/src
+        ${SOURCESDK}/game/shared
+        ${SOURCESDK}/game/server
+        ${SOURCESDK}/public
+        ${SOURCESDK}/public/tier0
+        ${SOURCESDK}/public/tier1
+        ${SOURCESDK}/public/engine/protobuf
+        #${DYNCALLSDK_INCLUDE}
+        #${BOOSTSDK_INCLUDE}
+        #${ASMJITSDK_INCLUDE}
+        #${DYNAMICHOOKSSDK_INCLUDE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/core # Hack but required.
+    )
+
+    # [css2025_win32] You can start debugging from VS if you set CSS_SERVER_DIR env var.
+    if(DEFINED ENV{CSS_SERVER_DIR})
+        set_target_properties(${TARGET_NAME} PROPERTIES
+            VS_DEBUGGER_COMMAND "$ENV{CSS_SERVER_DIR}\\srcds.exe"
+            VS_DEBUGGER_COMMAND_ARGUMENTS "-console -game cstrike -port 27015 +map de_dust -autoupdate +sv_lan 1"
+        )
+    endif()
+endfunction()
+
+if(DEFINED ENV{CSS_SERVER_DIR})
+    add_custom_command(
+        TARGET source-python POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+            $<TARGET_FILE:source-python>
+            "$ENV{CSS_SERVER_DIR}/cstrike/addons/source-python.dll"
+    )
+    add_custom_command(
+        TARGET core POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+            $<TARGET_FILE:core>
+            "$ENV{CSS_SERVER_DIR}/cstrike/addons/source-python/bin/core.dll"
+    )
+endif()
+
+SOURCE_PYTHON_COMMON(core)
+SOURCE_PYTHON_COMMON(source-python)
+
+# Loads experimental projects
+#add_subdirectory(experiments)

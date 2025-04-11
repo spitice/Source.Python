@@ -54,3 +54,7 @@ addons/source-python/docs/plugins/
 
 # Linux temp files
 *~
+
+# Build
+src/.vs
+src/out

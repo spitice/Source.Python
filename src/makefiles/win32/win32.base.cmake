@@ -20,49 +20,57 @@ Set(PYTHONSDK_LIB        ${PYTHONSDK}/libs)
 # ------------------------------------------------------------------
 # Add in the python sdk as an include directory.
 # ------------------------------------------------------------------
+# [css2025_win32] Set in the root CMakeList
 Include_Directories(
-    ${PYTHONSDK_INCLUDE}
+    #${PYTHONSDK_INCLUDE}
 )
 
 # ------------------------------------------------------------------
 # Required to get SP to compile on MSVC for csgo.
 # ------------------------------------------------------------------
-Add_Definitions(-DCOMPILER_MSVC -DCOMPILER_MSVC32 -D_WIN32)
+# [css2025_win32] Set in the root CMakeList
+#Add_Definitions(-DCOMPILER_MSVC -DCOMPILER_MSVC32 -D_WIN32)
 
 # ------------------------------------------------------------------
 # Release flags.
 # ------------------------------------------------------------------
-Set(CMAKE_CXX_FLAGS_RELEASE "/D_NDEBUG /MD /wd4005 /MP")
+# [css2025_win32] Set in the root CMakeList.
+# We are always using /MT (no debug builds would be generated.)
+#Set(CMAKE_CXX_FLAGS_RELEASE "/D_NDEBUG /MD /wd4005 /MP")
 
 # ------------------------------------------------------------------
 # Statically link runtime libraries for the loader
 # ------------------------------------------------------------------
+# [css2025_win32] Set in the root CMakeList.
 # This looks like a bug...
 # For the debug config we need to specify the release flag and vice versa.
-target_compile_options(source-python PRIVATE "/MT$<$<CONFIG:Debug>:d>")
-target_compile_options(source-python PRIVATE "/MTd$<$<CONFIG:Release>:d>")
+#target_compile_options(source-python PRIVATE "/MT$<$<CONFIG:Debug>:d>")
+#target_compile_options(source-python PRIVATE "/MTd$<$<CONFIG:Release>:d>")
 
-Set_Target_Properties(core PROPERTIES
-    LINK_FLAGS_RELEASE "/NODEFAULTLIB:LIBC.lib /NODEFAULTLIB:LIBCMT.lib /NODEFAULTLIB:LIBCPMT.lib"
-)
+# [css2025_win32] Not using /NODEFAULTLIB flags
+#Set_Target_Properties(core PROPERTIES
+#    LINK_FLAGS_RELEASE "/NODEFAULTLIB:LIBC.lib /NODEFAULTLIB:LIBCMT.lib /NODEFAULTLIB:LIBCPMT.lib"
+#)
 
 # ------------------------------------------------------------------
 # Link libraries.
 # ------------------------------------------------------------------
+# [css2025_win32]
+# UNUSED. The list of linked libraries is defined in the root CMakeList.
 Set(SOURCEPYTHON_LINK_LIBRARIES
-    ${SOURCESDK_LIB}/public/tier0.lib
-    ${SOURCESDK_LIB}/public/tier1.lib
-    ${SOURCESDK_LIB}/public/tier2.lib
-    ${SOURCESDK_LIB}/public/tier3.lib
-    ${SOURCESDK_LIB}/public/vstdlib.lib
-    ${SOURCESDK_LIB}/public/mathlib.lib
-    ${DYNCALLSDK_LIB}/libdyncall_s.lib
-    ${DYNCALLSDK_LIB}/libdyncallback_s.lib
-    ${DYNCALLSDK_LIB}/libdynload_s.lib
-    ${ASMJITSDK_LIB}/AsmJit.lib
-    ${DYNAMICHOOKSSDK_LIB}/DynamicHooks.lib
-    ${BOOSTSDK_LIB}/libboost_filesystem-vc100-mt-s-1_64.lib
-    ${BOOSTSDK_LIB}/libboost_system-vc100-mt-s-1_64.lib
+    ${SOURCESDK_LIB}/public/x86/tier0.lib
+    ${SOURCESDK_LIB}/public/x86/tier1.lib
+    #${SOURCESDK_LIB}/public/x64/tier2.lib  # missing in x86
+    #${SOURCESDK_LIB}/public/x64/tier3.lib  # missing in x86
+    ${SOURCESDK_LIB}/public/x86/vstdlib.lib
+    ${SOURCESDK_LIB}/public/x86/mathlib.lib
+    #${DYNCALLSDK_LIB}/libdyncall_s.lib
+    #${DYNCALLSDK_LIB}/libdyncallback_s.lib
+    #${DYNCALLSDK_LIB}/libdynload_s.lib
+    #${ASMJITSDK_LIB}/AsmJit.lib
+    #${DYNAMICHOOKSSDK_LIB}/DynamicHooks.lib
+    #${BOOSTSDK_LIB}/libboost_filesystem-vc100-mt-s-1_64.lib
+    #${BOOSTSDK_LIB}/libboost_system-vc100-mt-s-1_64.lib
 )
 
 # CSGO Engine adds in interfaces.lib
@@ -83,9 +91,10 @@ Endif()
 # ------------------------------------------------------------------
 # Release link libraries
 # ------------------------------------------------------------------
+# [css2025_win32] List of linked libraries are defined in the root CMakeList
 Set(SOURCEPYTHON_LINK_LIBRARIES_RELEASE
-    optimized ${PYTHONSDK_LIB}/python36.lib
-    optimized ${BOOSTSDK_LIB}/libboost_python3-vc100-mt-1_64.lib
+    #optimized ${PYTHONSDK_LIB}/python36.lib
+    #optimized ${BOOSTSDK_LIB}/libboost_python3-vc100-mt-1_64.lib
 )
 
 If( SOURCE_ENGINE MATCHES "csgo" )

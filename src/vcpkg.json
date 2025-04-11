@@ -1,0 +1,11 @@
+{
+  "name": "source-python",
+  "version": "1.0",
+  "dependencies": [
+    "boost-core",
+    "boost-filesystem",
+    "boost-python",
+    "boost-system",
+    "python3"
+  ]
+}

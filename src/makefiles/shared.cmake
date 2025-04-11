@@ -7,10 +7,14 @@
 # ------------------------------------------------------------------
 # We only need a release and debug configuration.
 # ------------------------------------------------------------------
-Set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING 
-	"Only do Release and Debug" 
-	FORCE
-)
+# [css2025_win32]
+# We are using Release and RelWithDebInfo set in CMakePreset.json.
+#
+# Let CMakePresets set this value
+#Set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING
+#	"Only do Release and Debug"
+#	FORCE
+#)
 
 # ------------------------------------------------------------------
 # Setup include paths.
@@ -55,31 +59,36 @@ Set(DYNAMICHOOKSSDK_LIB       ${DYNAMICHOOKSSDK}/lib)
 # ------------------------------------------------------------------
 # Include directories
 # ------------------------------------------------------------------
-Include_Directories(
-    ${SOURCESDK}
-    ${SOURCESDK}/common
-    ${SOURCESDK}/common/protobuf-2.5.0/src
-    ${SOURCESDK}/game/shared
-    ${SOURCESDK}/game/server
-    ${SOURCESDK}/public
-    ${SOURCESDK}/public/tier0
-    ${SOURCESDK}/public/tier1
-    ${SOURCESDK}/public/engine/protobuf
-    ${DYNCALLSDK_INCLUDE}
-    ${BOOSTSDK_INCLUDE}
-    ${ASMJITSDK_INCLUDE}
-    ${DYNAMICHOOKSSDK_INCLUDE}
-    ${CMAKE_CURRENT_SOURCE_DIR}/core # Hack but required.
-)
+# [css2025_win32] Include directories are set in the root CMakeList
+#Include_Directories(
+#    ${SOURCESDK}
+#    ${SOURCESDK}/common
+#    ${SOURCESDK}/common/protobuf-2.5.0/src
+#    ${SOURCESDK}/game/shared
+#    ${SOURCESDK}/game/server
+#    ${SOURCESDK}/public
+#    ${SOURCESDK}/public/tier0
+#    ${SOURCESDK}/public/tier1
+#    ${SOURCESDK}/public/engine/protobuf
+#    ${DYNCALLSDK_INCLUDE}
+#    ${BOOSTSDK_INCLUDE}
+#    ${ASMJITSDK_INCLUDE}
+#    ${DYNAMICHOOKSSDK_INCLUDE}
+#    ${CMAKE_CURRENT_SOURCE_DIR}/core # Hack but required.
+#)
 
 # ------------------------------------------------------------------
 # This is required to get boost to statically link.
 # ------------------------------------------------------------------
-Add_Definitions(
-    -DBOOST_PYTHON_STATIC_LIB
-    -DBOOST_PYTHON_SOURCE
-    -DBOOST_PYTHON_NO_LIB
-)
+# [css2025_win32]
+# We are using dynamic link boost::python.
+# Remove this macros to prevent unresolved external symbol linking error.
+#
+#Add_Definitions(
+#    -DBOOST_PYTHON_STATIC_LIB
+#    -DBOOST_PYTHON_SOURCE
+#    -DBOOST_PYTHON_NO_LIB
+#)
 
 # ------------------------------------------------------------------
 # The project.
