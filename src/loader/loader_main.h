@@ -92,6 +92,8 @@ public:
 	virtual PLUGIN_RESULT	NetworkIDValidated( const char *pszUserName, const char *pszNetworkID );
 	virtual void			OnQueryCvarValueFinished( QueryCvarCookie_t iCookie, edict_t *pPlayerEntity,
 		EQueryCvarValueStatus eStatus, const char *pCvarName, const char *pCvarValue );
+	virtual void			OnEdictAllocated( edict_t *edict );
+	virtual void			OnEdictFreed( const edict_t *edict );
 
 	virtual int				GetCommandIndex() { return m_iClientCommandIndex; }
 

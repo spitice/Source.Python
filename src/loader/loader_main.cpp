@@ -188,7 +188,8 @@ bool CSourcePython::Load( CreateInterfaceFn interfaceFactory, CreateInterfaceFn 
 	DevMsg(1, MSG_PREFIX "Game directory: %s\n", szGameDir);
 	GenerateSymlink(szGameDir);
 
-	if (UpdateAvailable())
+	// [css2025_win32] Auto update is disabled
+	/*if (UpdateAvailable())
 	{
 		try
 		{
@@ -199,7 +200,7 @@ bool CSourcePython::Load( CreateInterfaceFn interfaceFactory, CreateInterfaceFn 
 			Msg(MSG_PREFIX "An error occured during update stage 2:\n%s\n", e.what());
 			return false;
 		}
-	}
+	}*/
 
 	// ------------------------------------------------------------------
 	// Load windows dependencies.
@@ -223,6 +224,16 @@ bool CSourcePython::Load( CreateInterfaceFn interfaceFactory, CreateInterfaceFn 
 	if( SPLoadLibrary(engine, PYLIB_NAME) == NULL ) {
 		return false;
 	}
+
+	// [css2025_win32]
+	// We are using shared version of boost::python. Load it as well.
+	//
+	// Load order must be:
+	// 1. vcruntime140.dll
+	// 2. python311.dll
+	// 3. boost_python311-vc143-mt-x32-1_87.dll
+	// 4. core.dll
+    SPLoadLibrary(engine, "bin/boost_python311-vc143-mt-x32-1_87.dll");
 
 	// ------------------------------------------------------------------
 	// Load the Source.Python core.
@@ -436,6 +447,12 @@ void CSourcePython::OnQueryCvarValueFinished( QueryCvarCookie_t iCookie, edict_t
 	{
 		m_pCorePlugin->OnQueryCvarValueFinished(iCookie, pPlayerEntity, eStatus, pCvarName, pCvarValue);
 	}
+}
+void CSourcePython::OnEdictAllocated(edict_t* edict)
+{
+}
+void CSourcePython::OnEdictFreed(const edict_t* edict)
+{
 }
 
 //---------------------------------------------------------------------------------

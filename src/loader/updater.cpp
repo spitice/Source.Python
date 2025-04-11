@@ -31,9 +31,11 @@
 #include "updater.h"
 #include "definitions.h"
 
+// [css2025_win32] Disables auto update
+// [css2025_win32] Remove the use of boost::fs so its runtime dll won't be needed.
 // Boost
-#include "boost/filesystem.hpp"
-namespace bfs = boost::filesystem;
+//#include "boost/filesystem.hpp"
+//namespace bfs = boost::filesystem;
 
 // SDK
 #include "eiface.h"
@@ -50,66 +52,67 @@ extern IVEngineServer* engine;
 //---------------------------------------------------------------------------------
 bool UpdateAvailable()
 {
-	DevMsg(1, MSG_PREFIX "Checking if update stage 2 can be applied... ");
+    return false;
+	//DevMsg(1, MSG_PREFIX "Checking if update stage 2 can be applied... ");
 
-	char szGameDir[MAX_PATH_LENGTH];
-	engine->GetGameDir(szGameDir, MAX_PATH_LENGTH);
+	//char szGameDir[MAX_PATH_LENGTH];
+	//engine->GetGameDir(szGameDir, MAX_PATH_LENGTH);
 
-	bfs::path updateDir = bfs::path(szGameDir) / SP_UPDATE_PATH;
-	bool result = bfs::is_directory(updateDir) && !bfs::is_empty(updateDir);
+	//bfs::path updateDir = bfs::path(szGameDir) / SP_UPDATE_PATH;
+	//bool result = bfs::is_directory(updateDir) && !bfs::is_empty(updateDir);
 
-	DevMsg(1, "%s.\n", result ? "Yes" : "No");
-	return result;
+	//DevMsg(1, "%s.\n", result ? "Yes" : "No");
+	//return result;
 }
 
-static void DeleteDir(const bfs::path& dir)
-{
-	DevMsg(1, MSG_PREFIX "Deleting %s...\n", dir.string().c_str());
-	bfs::remove_all(dir);
-}
-
-static void MergeDirectories(const bfs::path& src, const bfs::path& dst)
-{
-	if (bfs::is_directory(src)) {
-		bfs::create_directories(dst);
-
-		bfs::directory_iterator end_iter;
-		for (bfs::directory_iterator iter(src); iter != end_iter; ++iter)
-		{
-			MergeDirectories(iter->path(), dst/iter->path().filename());
-		}
-	} 
-	else if (bfs::is_regular_file(src))
-	{
-		DevMsg(5, MSG_PREFIX "Merging %s into %s...\n", src.string().c_str(), dst.string().c_str());
-		bfs::rename(src, dst);
-	} 
-	else
-	{
-		Msg(MSG_PREFIX "%s is not a file or directory. Doing nothing...\n", dst.string().c_str());
-	}
-}
+//static void DeleteDir(const bfs::path& dir)
+//{
+//	DevMsg(1, MSG_PREFIX "Deleting %s...\n", dir.string().c_str());
+//	bfs::remove_all(dir);
+//}
+//
+//static void MergeDirectories(const bfs::path& src, const bfs::path& dst)
+//{
+//	if (bfs::is_directory(src)) {
+//		bfs::create_directories(dst);
+//
+//		bfs::directory_iterator end_iter;
+//		for (bfs::directory_iterator iter(src); iter != end_iter; ++iter)
+//		{
+//			MergeDirectories(iter->path(), dst/iter->path().filename());
+//		}
+//	}
+//	else if (bfs::is_regular_file(src))
+//	{
+//		DevMsg(5, MSG_PREFIX "Merging %s into %s...\n", src.string().c_str(), dst.string().c_str());
+//		bfs::rename(src, dst);
+//	}
+//	else
+//	{
+//		Msg(MSG_PREFIX "%s is not a file or directory. Doing nothing...\n", dst.string().c_str());
+//	}
+//}
 
 void ApplyUpdateStage2()
 {
-	Msg(MSG_PREFIX "Applying update stage 2...\n");
+	//Msg(MSG_PREFIX "Applying update stage 2...\n");
 
-	char szGameDir[MAX_PATH_LENGTH];
-	engine->GetGameDir(szGameDir, MAX_PATH_LENGTH);
+	//char szGameDir[MAX_PATH_LENGTH];
+	//engine->GetGameDir(szGameDir, MAX_PATH_LENGTH);
 
-	// Delete old directories
-	DeleteDir(bfs::path(szGameDir) / SP_PACKAGE_PATH);
-	DeleteDir(bfs::path(szGameDir) / SP_DATA_PATH);
-	DeleteDir(bfs::path(szGameDir) / SP_DOCS_PATH);
-	DeleteDir(bfs::path(szGameDir) / PYTHON3_PATH);
+	//// Delete old directories
+	//DeleteDir(bfs::path(szGameDir) / SP_PACKAGE_PATH);
+	//DeleteDir(bfs::path(szGameDir) / SP_DATA_PATH);
+	//DeleteDir(bfs::path(szGameDir) / SP_DOCS_PATH);
+	//DeleteDir(bfs::path(szGameDir) / PYTHON3_PATH);
 
-	// Move files from update dir to real dir
-	bfs::path updateDir = bfs::path(szGameDir) / SP_UPDATE_PATH;
-	DevMsg(1, MSG_PREFIX "Merging \"%s\" into \"%s\"...\n", updateDir.string().c_str(), szGameDir);
-	MergeDirectories(updateDir, szGameDir);
+	//// Move files from update dir to real dir
+	//bfs::path updateDir = bfs::path(szGameDir) / SP_UPDATE_PATH;
+	//DevMsg(1, MSG_PREFIX "Merging \"%s\" into \"%s\"...\n", updateDir.string().c_str(), szGameDir);
+	//MergeDirectories(updateDir, szGameDir);
 
-	// Delete update dir, because it now contains a bunch of empty directories
-	DeleteDir(updateDir);
+	//// Delete update dir, because it now contains a bunch of empty directories
+	//DeleteDir(updateDir);
 
-	Msg(MSG_PREFIX "Stage 2 has been applied.\n");
+	//Msg(MSG_PREFIX "Stage 2 has been applied.\n");
 }
