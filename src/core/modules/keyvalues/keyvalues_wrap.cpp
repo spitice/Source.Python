@@ -49,20 +49,28 @@
 	friend void RecursiveCopyKeyValuesHack(KeyValues* pThis, KeyValues& src);
 	void RecursiveCopyKeyValues( KeyValues& src );
 */
-#define RecursiveCopyKeyValues \
+// [css2025_win32] RecursiveCopyKeyValues has been renamed.
+// OLD: RecursiveCopyKeyValues
+// NEW: CopyKeyValuesFromRecursive
+
+//#define RecursiveCopyKeyValues \
+//	JustFinishTheDeclaration() {} \
+//	friend void RecursiveCopyKeyValuesHack(KeyValues* pThis, KeyValues& src); \
+//	void RecursiveCopyKeyValues
+#define CopyKeyValuesFromRecursive \
 	JustFinishTheDeclaration() {} \
 	friend void RecursiveCopyKeyValuesHack(KeyValues* pThis, KeyValues& src); \
-	void RecursiveCopyKeyValues
+	void CopyKeyValuesFromRecursive
 
 #include "tier1/KeyValues.h"
 
 // Now, remove the replacement, so the friend function can call the member function.
-#define RecursiveCopyKeyValues RecursiveCopyKeyValues
+//#define CopyKeyValuesFromRecursive CopyKeyValuesFromRecursive
+#undef CopyKeyValuesFromRecursive
 void RecursiveCopyKeyValuesHack(KeyValues* pThis, KeyValues& src)
 {
-	// [css2025_win32] RecursiveCopyKeyValues has been removed.
 	//pThis->RecursiveCopyKeyValues(src);
-    pThis->RecursiveMergeKeyValues(&src);
+    pThis->CopyKeyValuesFromRecursive(src);
 }
 
 
