@@ -72,6 +72,10 @@ if LOG_FILE_OPERATIONS:
 #   Loggers
 from loggers import _sp_logger  # It's save to import this here
 
+# [css2025_win32] Fixes UnicodeDecodeError on processing multi-byte char player names.
+# This is not an ideal way of handling multi-byte char names in python but it should work.
+import codecs
+codecs.register_error('strict', codecs.lookup_error("ignore"))
 
 # =============================================================================
 # >> LOAD & UNLOAD
