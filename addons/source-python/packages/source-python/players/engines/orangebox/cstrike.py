@@ -53,9 +53,7 @@ class Player(_Player):
             return
 
         # Spawn the player...
-        self.player_state = 0
-        self.life_state = LifeState.ALIVE
-        BaseEntity.spawn(self)
+        self._spawn()
 
 
 # =============================================================================
